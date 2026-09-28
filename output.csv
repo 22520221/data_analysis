@@ -1,0 +1,11 @@
+OrderID,Product,Price,Quantity,City,Total
+1,Laptop,15000,2,HCM,30000
+2,Mouse,250,3,Hà Nội,750
+3,Keyboard,600,1,Đà Nẵng,600
+4,Monitor,4500,2,HCM,9000
+5,Laptop,16000,1,Cần Thơ,16000
+6,Mouse,300,5,HCM,1500
+7,Headphone,1200,2,Hà Nội,2400
+8,Keyboard,700,4,HCM,2800
+9,Webcam,900,2,Đà Nẵng,1800
+10,Laptop,18000,1,HCM,18000
