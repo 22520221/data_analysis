@@ -5,7 +5,10 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
 
 # Load dataset
 df = pd.read_csv("quotes_30.csv")
@@ -18,22 +21,22 @@ df = pd.read_csv("quotes_30.csv")
 # Count number of quotes for each author
 author_counts = df["Author"].value_counts()
 
-print("=== Quote count by author ===")
-print(author_counts)
+#print("=== Quote count by author ===")
+#print(author_counts)
 
 
 # Top 10 authors
 top_authors = author_counts.head(10)
 
-print("\n=== Top 10 authors ===")
-print(top_authors)
+#print("\n=== Top 10 authors ===")
+#print(top_authors)
 
 
 # Percentage of quotes by author
 author_percentage = (author_counts / len(df) * 100).round(2)
 
-print("\n=== Quote percentage by author ===")
-print(author_percentage)
+#print("\n=== Quote percentage by author ===")
+#print(author_percentage)
 
 
 # Plot top authors
@@ -44,7 +47,7 @@ plt.xlabel("Author")
 plt.ylabel("Number of Quotes")
 plt.xticks(rotation=45)
 plt.tight_layout()
-plt.show()
+#plt.show()
 
 
 # ============================================================
@@ -59,8 +62,8 @@ df["Quote_Length"] = df["Quote"].str.len()
 df["Word_Count"] = df["Quote"].str.split().str.len()
 
 
-print("\n=== New features ===")
-print(df[["Quote", "Quote_Length", "Word_Count"]].head(10))
+#print("\n=== New features ===")
+#print(df[["Quote", "Quote_Length", "Word_Count"]].head(10))
 
 
 # ============================================================
@@ -73,14 +76,14 @@ mean_length = df["Quote_Length"].mean()
 # Median
 median_length = df["Quote_Length"].median()
 
-print("\n=== Quote Length Statistics ===")
-print("Mean:", mean_length)
-print("Median:", median_length)
+#print("\n=== Quote Length Statistics ===")
+#print("Mean:", mean_length)
+#print("Median:", median_length)
 
 
 # Full descriptive statistics
-print("\n=== Descriptive Statistics ===")
-print(df["Quote_Length"].describe())
+#print("\n=== Descriptive Statistics ===")
+#print(df["Quote_Length"].describe())
 
 
 # Distribution of quote length
@@ -89,7 +92,7 @@ df["Quote_Length"].plot(kind="hist", bins=10)
 plt.title("Distribution of Quote Length")
 plt.xlabel("Quote Length")
 plt.ylabel("Number of Quotes")
-plt.show()
+#plt.show()
 
 
 # ============================================================
@@ -102,23 +105,23 @@ Q3 = df["Quote_Length"].quantile(0.75)
 
 IQR = Q3 - Q1
 
-print("\n=== Outlier Analysis ===")
-print("Q1:", Q1)
-print("Q3:", Q3)
-print("IQR:", IQR)
+#print("\n=== Outlier Analysis ===")
+#print("Q1:", Q1)
+#print("Q3:", Q3)
+#print("IQR:", IQR)
 
 
 # Calculate upper bound
 upper_bound = Q3 + 1.5 * IQR
 
-print("Upper Bound:", upper_bound)
+#print("Upper Bound:", upper_bound)
 
 
 # Find outliers
 outliers = df[df["Quote_Length"] > upper_bound]
 
-print("\n=== Outliers ===")
-print(outliers[["Author", "Quote_Length"]])
+#print("\n=== Outliers ===")
+#print(outliers[["Author", "Quote_Length"]])
 
 
 # Compare mean before and after removing outliers
@@ -128,9 +131,9 @@ mean_after = (
     df[df["Quote_Length"] <= upper_bound]["Quote_Length"].mean()
 )
 
-print("\n=== Mean comparison ===")
-print("Mean before:", mean_before)
-print("Mean after:", mean_after)
+#print("\n=== Mean comparison ===")
+#print("Mean before:", mean_before)
+#print("Mean after:", mean_after)
 
 
 # ============================================================
@@ -140,8 +143,8 @@ print("Mean after:", mean_after)
 # Calculate correlation
 correlation = df["Word_Count"].corr(df["Quote_Length"])
 
-print("\n=== Correlation ===")
-print("Correlation:", correlation)
+#print("\n=== Correlation ===")
+#print("Correlation:", correlation)
 
 
 # Scatter plot
@@ -151,7 +154,7 @@ plt.title("Word Count vs Quote Length")
 plt.xlabel("Word Count")
 plt.ylabel("Quote Length")
 
-plt.show()
+#plt.show()
 
 
 # Linear regression
@@ -162,13 +165,13 @@ m, b = np.polyfit(x, y, 1)
 
 
 # Regression equation
-print("\n=== Linear Regression ===")
-print("m =", m)
-print("b =", b)
+#print("\n=== Linear Regression ===")
+#print("m =", m)
+#print("b =", b)
 
-print(
-    f"Equation: Quote_Length = {m:.4f} * Word_Count + {b:.4f}"
-)
+#print(
+#    f"Equation: Quote_Length = {m:.4f} * Word_Count + {b:.4f}"
+#)
 
 
 # Scatter plot + regression line
@@ -180,11 +183,80 @@ plt.title("Word Count vs Quote Length with Regression Line")
 plt.xlabel("Word Count")
 plt.ylabel("Quote Length")
 
-plt.show()
+#plt.show()
 
 
 # R-squared
 r_squared = correlation ** 2
 
+#print("\n=== R-squared ===")
+#print("R-squared:", r_squared)
+
+# ============================================================
+# 7. MACHINE LEARNING
+# ============================================================
+
+print("\n=== Machine Learning Data ===")
+
+X = df[["Word_Count"]]
+y = df["Quote_Length"]
+
+print("X:")
+print(X.head())
+
+print("\ny:")
+print(y.head())
+
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.2,
+    random_state=42
+)
+
+print("\n=== Train Test Split ===")
+
+print("X_train:", X_train.shape)
+print("X_test:", X_test.shape)
+
+print("y_train:", y_train.shape)
+print("y_test:", y_test.shape)
+
+model = LinearRegression()
+
+model.fit(X_train, y_train)
+
+print("\n=== Model Training ===")
+print("Model has been trained.")
+
+predictions = model.predict(X_test)
+
+print("\n=== Predictions ===")
+print(predictions)
+
+print("\n=== Actual vs Predicted ===")
+
+comparison = pd.DataFrame({
+    "Actual": y_test.values,
+    "Predicted": predictions
+})
+
+print(comparison)
+
+mae = mean_absolute_error(y_test, predictions)
+
+print("\n=== Model Evaluation ===")
+print("MAE:", mae)
+
+mse = mean_squared_error(y_test, predictions)
+rmse = mse ** 0.5
+
+print("\n=== RMSE ===")
+print("RMSE:", rmse)
+
+r2 = r2_score(y_test, predictions)
+
 print("\n=== R-squared ===")
-print("R-squared:", r_squared)
+print("R-squared:", r2)
