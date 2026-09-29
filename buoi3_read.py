@@ -40,13 +40,13 @@ author_percentage = (author_counts / len(df) * 100).round(2)
 
 
 # Plot top authors
-top_authors.plot(kind="bar")
+#top_authors.plot(kind="bar")
 
-plt.title("Top 10 Authors by Number of Quotes")
-plt.xlabel("Author")
-plt.ylabel("Number of Quotes")
-plt.xticks(rotation=45)
-plt.tight_layout()
+#plt.title("Top 10 Authors by Number of Quotes")
+#plt.xlabel("Author")
+#plt.ylabel("Number of Quotes")
+#plt.xticks(rotation=45)
+#plt.tight_layout()
 #plt.show()
 
 
@@ -87,11 +87,11 @@ median_length = df["Quote_Length"].median()
 
 
 # Distribution of quote length
-df["Quote_Length"].plot(kind="hist", bins=10)
+#df["Quote_Length"].plot(kind="hist", bins=10)
 
-plt.title("Distribution of Quote Length")
-plt.xlabel("Quote Length")
-plt.ylabel("Number of Quotes")
+#plt.title("Distribution of Quote Length")
+#plt.xlabel("Quote Length")
+#plt.ylabel("Number of Quotes")
 #plt.show()
 
 
@@ -148,11 +148,11 @@ correlation = df["Word_Count"].corr(df["Quote_Length"])
 
 
 # Scatter plot
-plt.scatter(df["Word_Count"], df["Quote_Length"])
+#plt.scatter(df["Word_Count"], df["Quote_Length"])
 
-plt.title("Word Count vs Quote Length")
-plt.xlabel("Word Count")
-plt.ylabel("Quote Length")
+#plt.title("Word Count vs Quote Length")
+#plt.xlabel("Word Count")
+#plt.ylabel("Quote Length")
 
 #plt.show()
 
@@ -175,13 +175,13 @@ m, b = np.polyfit(x, y, 1)
 
 
 # Scatter plot + regression line
-plt.scatter(x, y)
+#plt.scatter(x, y)
 
-plt.plot(x, m * x + b)
+#plt.plot(x, m * x + b)
 
-plt.title("Word Count vs Quote Length with Regression Line")
-plt.xlabel("Word Count")
-plt.ylabel("Quote Length")
+#plt.title("Word Count vs Quote Length with Regression Line")
+#plt.xlabel("Word Count")
+#plt.ylabel("Quote Length")
 
 #plt.show()
 
@@ -260,3 +260,54 @@ r2 = r2_score(y_test, predictions)
 
 print("\n=== R-squared ===")
 print("R-squared:", r2)
+
+# ============================================================
+# 8. ACTUAL VS PREDICTED
+# ============================================================
+
+print("\n=== Check Plot Data ===")
+
+print("y_test:")
+print(y_test)
+
+print("\npredictions:")
+print(predictions)
+
+actual = y_test.to_numpy()
+predicted = predictions
+
+plt.scatter(actual, predicted)
+
+plt.plot(
+    [actual.min(), actual.max()],
+    [actual.min(), actual.max()]
+)
+
+plt.xlabel("Actual Quote Length")
+plt.ylabel("Predicted Quote Length")
+plt.title("Actual vs Predicted")
+
+plt.show()
+
+residuals = y_test.values - predictions
+
+print("\n=== Residuals ===")
+print(residuals)
+
+plt.scatter(predictions, residuals)
+
+plt.axhline(y=0)
+
+plt.xlabel("Predicted Quote Length")
+plt.ylabel("Residual")
+plt.title("Residual Plot")
+
+plt.show()
+
+evaluation = pd.DataFrame({
+    "Metric": ["MAE", "RMSE", "R2"],
+    "Value": [mae, rmse, r2]
+})
+
+print("\n=== Model Evaluation Summary ===")
+print(evaluation)
