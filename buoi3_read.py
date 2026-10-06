@@ -311,3 +311,200 @@ evaluation = pd.DataFrame({
 
 print("\n=== Model Evaluation Summary ===")
 print(evaluation)
+
+print("\n=== Available Features ===")
+print(df.columns)
+
+from sklearn.preprocessing import PolynomialFeatures
+
+poly = PolynomialFeatures(degree=2)
+
+X_train_poly = poly.fit_transform(X_train)
+X_test_poly = poly.transform(X_test)
+
+print("\n=== Polynomial Features ===")
+
+print("Original X_train shape:", X_train.shape)
+print("Polynomial X_train shape:", X_train_poly.shape)
+
+poly_model = LinearRegression()
+
+poly_model.fit(X_train_poly, y_train)
+
+print("\n=== Polynomial Model Training ===")
+print("Polynomial model has been trained.")
+
+poly_predictions = poly_model.predict(X_test_poly)
+
+print("\n=== Polynomial Predictions ===")
+print(poly_predictions)
+
+poly_mae = mean_absolute_error(y_test, poly_predictions)
+
+poly_rmse = mean_squared_error(
+    y_test,
+    poly_predictions
+) ** 0.5
+
+poly_r2 = r2_score(y_test, poly_predictions)
+
+print("\n=== Polynomial Model Evaluation ===")
+print("MAE:", poly_mae)
+print("RMSE:", poly_rmse)
+print("R2:", poly_r2)
+
+comparison = pd.DataFrame({
+    "Metric": ["MAE", "RMSE", "R2"],
+    "Linear Regression": [mae, rmse, r2],
+    "Polynomial Regression": [poly_mae, poly_rmse, poly_r2]
+})
+
+print("\n=== Model Comparison ===")
+print(comparison)
+
+from sklearn.model_selection import cross_val_score
+
+cv_scores = cross_val_score(
+    model,
+    X,
+    y,
+    cv=5,
+    scoring="r2"
+)
+
+print("\n=== Cross-Validation R2 ===")
+print(cv_scores)
+
+cv_mean = cv_scores.mean()
+
+print("\n=== Cross-Validation Summary ===")
+print("Mean R2:", cv_mean)
+print("Std R2:", cv_scores.std())
+
+print("\n=== Number of Authors ===")
+print(df["Author"].nunique())
+
+print("\n=== Authors ===")
+print(df["Author"].unique())
+
+author_encoded = pd.get_dummies(
+    df["Author"],
+    prefix="Author"
+)
+
+print("\n=== Encoded Author ===")
+print(author_encoded.head())
+
+X_author = pd.concat(
+    [
+        df[["Word_Count"]],
+        author_encoded
+    ],
+    axis=1
+)
+
+print("\n=== New Features ===")
+print(X_author.head())
+print("\nShape:", X_author.shape)
+
+X_author_train, X_author_test, y_author_train, y_author_test = train_test_split(
+    X_author,
+    y,
+    test_size=0.2,
+    random_state=42
+)
+
+print("\n=== Author Model Train/Test ===")
+print("X_train:", X_author_train.shape)
+print("X_test:", X_author_test.shape)
+print("y_train:", y_author_train.shape)
+print("y_test:", y_author_test.shape)
+
+author_model = LinearRegression()
+
+author_model.fit(
+    X_author_train,
+    y_author_train
+)
+
+print("\n=== Author Model Training ===")
+print("Author model has been trained.")
+
+author_predictions = author_model.predict(X_author_test)
+
+print("\n=== Author Model Predictions ===")
+print(author_predictions)
+
+author_mae = mean_absolute_error(
+    y_author_test,
+    author_predictions
+)
+
+author_rmse = mean_squared_error(
+    y_author_test,
+    author_predictions
+) ** 0.5
+
+author_r2 = r2_score(
+    y_author_test,
+    author_predictions
+)
+
+print("\n=== Author Model Evaluation ===")
+print("MAE:", author_mae)
+print("RMSE:", author_rmse)
+print("R2:", author_r2)
+
+model_summary = pd.DataFrame({
+    "Model": [
+        "Linear Regression",
+        "Polynomial Regression",
+        "Linear + Author"
+    ],
+    "MAE": [
+        mae,
+        poly_mae,
+        author_mae
+    ],
+    "RMSE": [
+        rmse,
+        poly_rmse,
+        author_rmse
+    ],
+    "R2": [
+        r2,
+        poly_r2,
+        author_r2
+    ]
+})
+
+print("\n=== Final Model Comparison ===")
+print(model_summary.round(4))
+
+plt.figure(figsize=(9, 5))
+
+plt.bar(
+    model_summary["Model"],
+    model_summary["MAE"]
+)
+
+plt.xlabel("Model")
+plt.ylabel("MAE")
+plt.title("MAE Comparison")
+plt.xticks(rotation=15)
+
+plt.show()
+
+plt.figure(figsize=(9, 5))
+
+plt.bar(
+    model_summary["Model"],
+    model_summary["R2"]
+)
+
+plt.xlabel("Model")
+plt.ylabel("R2")
+plt.title("R2 Comparison")
+plt.xticks(rotation=15)
+
+plt.show()
